@@ -1,0 +1,76 @@
+hadoop 설치
+
+계정 추가
+    useradd hadoop
+    su - hadoop
+    ssh-keygen -t dsa -P '' -f ~/.ssh/id_dsa
+    cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys
+    chmod 0600 ~/.ssh/authorized_keys
+    
+    
+하둡 다운로드
+    [hadoop@localhost home]$ cd /home
+    [hadoop@localhost home]$ mkdir hadoop
+    mkdir: cannot create directory `hadoop': File exists
+    //ls해서 목록을 보니 이미 생성되어 있음. ??
+    cd hadoop
+    wget http://apache.tt.co.kr/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz
+    //설치 시작
+    tar -zxvf hadoop-2.7.1.tar.gz
+    
+    
+컨피규어링
+    $vi $HOME/.bashrc
+    -bash: /home/hadoop/.bashrc: Permission denied
+    //허가되지 않은???
+    hadoop/hadoop-2.7.1/sbin
+    stop-dfs.sh //멈춤
+    
+    hdfs namenode -format 부터 다시 시작
+    start-dfs.sh
+    start-yarn.sh
+    
+    
+ Web GUI 확인
+    localhost:50070  # NameNode 정보 확인
+    localhost:50090  # Secondary NameNode 정보 확인
+    localhost:8088   # 클러스터와 모든 어플리케이션 정보 확인
+    
+테스트
+    vim test.txt 문서 제작
+    hdfs dfs -mkdir /user   # user 디렉토리를 만듬 # exist directory 인 경우는 패스하면 됨
+    hdfs dfs -mkdir /user/hadoop   # hadoop 디렉토리를 만듬 # exist directory 인 경우는 패스하면 됨
+    hdfs dfs -mkdir /user/hadoop/input   # input 디렉토리를 만듬
+    hdfs dfs -put test.txt /user/hadoop/input   # test.txt 파일을 input 디렉토리에 넣음
+
+    # Word Count java 코드 작성( github 에서 WordCount.java 파일 다운로드)
+    wget https://raw.githubusercontent.com/kowonsik/CCL/master/WordCount.java
+
+    # WordCount.java compile
+    hadoop com.sun.tools.javac.Main WordCount.java
+
+    # jar 파일 만들기
+    jar -cf wc.jar WordCount*.class
+
+    # Word Count 실행
+    hadoop jar wc.jar WordCount /user/hadoop/input /output
+
+    # 기본 파일 명령어
+    hadoop fs -ls /   # 모든 디렉토리 확인
+    hadoop fs -ls /output   # output 디렉토리 확인
+
+    # 결과 확인
+    hdfs dfs -cat /output/part-r-00000
+
+
+
+
+
+
+
+
+
+    
+
+
+
