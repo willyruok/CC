@@ -1,0 +1,21 @@
+151016
+openTSDB
+목표 : 크롤링
+-> 기상청에 있는 데이터를 가져옴
+
+hbase 워드같은 문서도 저장이 가능함.
+openTSDB를 사용함으로 hbase에 바로 저장하지 않고,
+데몬이 알아서 저장해주는.
+
+http://www.apache.org/dist/hbase/stable/
+나중에 링크에 들어가보면 버전이 확인이 가능함.
+안정된 버전으로 받으면 됨.
+
+hbase Install(버전이 바뀔수도 있음)
+    cd /usr/local
+    mkdir data
+    cd data
+    wget http://www.apache.org/dist/hbase/stable/hbase-1.1.2-bin.tar.gz
+
+
+
