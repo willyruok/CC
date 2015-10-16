@@ -16,6 +16,120 @@ hbase Install(버전이 바뀔수도 있음)
     mkdir data
     cd data
     wget http://www.apache.org/dist/hbase/stable/hbase-1.1.2-bin.tar.gz
+    //wget 인터넷 상에 있는 파일을 다운로드 받는 명령어
+    tar xvfz hbase-1.1.2-bin.tar.gz
+    //압축풀기
+    cd hbase-1.1.2
+    hbase_rootdir=${TMPDIR-'/usr/local/data'}/tsdhbase
+    iface=lo'uname | sed -n s/Darwin/0/p'
+    
+vim conf/hbase-site.xml에 아래 내용 추가
+<configuration>
+    <property>
+        <name>hbase.rootdir</name>
+        <value>file:///DIRECTORY/hbase</value>
+    </property>
+    <property>
+        <name>hbase.zookp.property.eataDir</name>
+        <value>/DRECTORY/zookeeper</value>
+    </property>
+</configuration>
+
+./bin/start-hbase.sh
+[starting master, logging to /usr/local/data/hbase-1.1.2/bin/../logs/hbase-root-master-localhost.localdomain.out
+Java HotSpot(TM) Client VM warning: ignoring option PermSize=128m; support was removed in 8.0
+Java HotSpot(TM) Client VM warning: ignoring option MaxPermSize=128m; support was removed in 8.0]
+source /etc/profile 했으나 아무 변화 없음
+
+다시 처음부터 확인
+conf/hbase-site.xml에 오타 있는지 확인
+
+     master running as process 5406. Stop it first.
+     source /etc/profile
+     cd /usr/local
+     yum install ant ant-nodeps lzo-devel.x86_64
+     yum list \*gd\*
+     yum install gd-devel.i686
+     wget http://sourceforge.net/projects/gnuplot/files/gnuplot/4.6.3/gnuplot-4.6.3.tar.gz
+     tar zxvf gnuplot-4.6.3.tar.gz
+     cd gnuplot-4.6.3
+     ./configure
+     make install
+     yum install gnuplot
+     
+OpenTSDB Install
+     cd /usr/local
+     git clone git://github.com/OpenTSDB/opentsdb.git
+
+     cd opentsdb
+     yum install autoconf
+     //yum 인터넷을 통해 패키지 다운
+     yum install automake
+     ./build.sh  <- It takes about 10 minutes to complete.
+     env COMPRESSION=NONE HBASE_HOME=/usr/local/data/hbase-1.1.2 ./src/create_table.sh 
+     tsdtmp=${TMPDIR-'/usr/local/data'}/tsd
+     mkdir -p "$tsdtmp"
+
+OpenTSDB Run
+     ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=/usr/local/data --auto-metric
+
+     # 웹브라우저에서 확인
+     http://127.0.0.1:4242
+     
+     터미널을 실행시킨 상태로 새로운 터미널 실행
+
+Data Input Test(Restful 방법)
+     sudo yum install python-setuptools python-setuptools-devel
+     sudo easy_install pip
+     pip install requests
+     vi post_test.py
+     
+     import time
+     import requests
+     import json
+
+     url = "http://127.0.0.1:4242/api/put"
+
+     data = {
+        "metric": "foo.bar",
+        "timestamp": time.time(),
+        "value": 2015,
+        "tags": {
+           "host": "mypc"
+        }
+     }
+
+     ret = requests.post(url, data=json.dumps(data))
+     print "ok"
+
+     python post_test.py
+     
+     # 웹브라우저에서 확인
+     http://127.0.0.1:4242/api/query?start=2015/10/14-00:00:00&end=2015/10/14-08:19:49&m=sum:foo.bar
+     
+     [] //대괄호 두개만 나옴.
+     
+     터미널에서 date > Thu Oct 15 19:29:23 PDT 2015
+     날짜와 800x491 사이즈변경
+     http://127.0.0.1:4242/#start=2015/10/15-00:00:00&end=2015/10/15-19:29:39&m=sum:foo.bar&o=&wxh=800x491
+     
+     
+Temperature Input Test(Restful 방법)
+     pip install lxml
+     Command "/usr/bin/python -c "import setuptools, tokenize;__file__='/tmp/pip-build-BhLLEF/lxml/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /tmp/pip-c5G_p1-record/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /tmp/pip-build-BhLLEF/lxml
+     //오류
+     
+
+
+
+
+     
+     
+     
+
+
+
+    
 
 
 
