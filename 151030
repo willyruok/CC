@@ -33,7 +33,7 @@ Tcollector Install
 
 Please comment cancel the portion of the '#TSD_HOST=dns.name.of.tsd' and Enter the Ip address.(4~5 line)
     ifconfig 192.168.85.128 
-    TSD_HOST=192.168.85.128 
+    TSD_HOST=192.168.85.128 //주석해제해야함.
     
     ./startstop start
     TSD_HOST is not set in ./startstop
@@ -45,7 +45,7 @@ Please comment cancel the portion of the '#TSD_HOST=dns.name.of.tsd' and Enter t
 
     vim insert_test.py
 
-    
+    #!/usr/bin/python
     import sys
     import urllib2
     import time
@@ -69,11 +69,7 @@ Please comment cancel the portion of the '#TSD_HOST=dns.name.of.tsd' and Enter t
     chmod 777 insert_test.py //파일권한 변경
     -rwxrwxrwx. 1 root root   299 Oct 29 19:03 insert_test.py //ll로 확인
     
+     ./startstop force restart
+    ps -ax
 
-
     
-    
-    
-    
-    
-    http://125.7.128.52/doku/doku.php?id=tsdb:opentsdb
