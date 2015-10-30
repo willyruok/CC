@@ -1,0 +1,79 @@
+
+실행시에 데몬이 돌아가야 함.
+    http://127.0.0.1:4242/ 브라우저에서 확인이 안됨.
+    env COMPRESSION=NONE HBASE_HOME=/usr/local/data/hbase-1.1.2 ./src/create_table.sh 
+    tsdtmp=${TMPDIR-'/usr/local/data'}/tsd
+    mkdir -p "$tsdtmp"
+     ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=/usr/local/data --auto-metric
+
+
+여전히 실행안됨.
+    cd /usr
+    cd local/data
+    cd hbase-1.1.2
+    cd bin
+    ls하면 start-hbase.sh / stop-hbase.sh 가 보임
+    먼저 stop 하고난 뒤에 다시 start
+    그리고나서 다시 처음부터 
+    env COMPRESSION=NONE HBASE_HOME=/usr/local/data/hbase-1.1.2 ./src/create_table.sh 
+    tsdtmp=${TMPDIR-'/usr/local/data'}/tsd
+    mkdir -p "$tsdtmp"
+    ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=/usr/local/data --auto-metric
+
+
+Tcollector Install
+
+    cd /usr/local
+    git clone git://github.com/OpenTSDB/tcollector.git
+    cd tcollector
+
+'startstop' Changing the file
+
+    vim startstop
+
+Please comment cancel the portion of the '#TSD_HOST=dns.name.of.tsd' and Enter the Ip address.(4~5 line)
+    ifconfig 192.168.85.128 
+    TSD_HOST=192.168.85.128 
+    
+    ./startstop start
+    TSD_HOST is not set in ./startstop
+    
+    
+    cd /usr/local/tcollector/collectors
+   mkdir 0
+   0 이미 있음
+
+    vim insert_test.py
+
+    
+    import sys
+    import urllib2
+    import time
+    from datetime import datetime, timedelta
+
+    while 1 :
+     t = time.localtime()
+     tsec = t.tm_sec
+     if tsec%10!=0 :
+       //10초가 안되면 그냥 초만 프린트
+            print tsec
+            time.sleep(0.2)
+
+    else :
+        print "inha.test %d %d" % ( time.time(), tsec )
+        //time.time 유닉스 타임
+        //http://www.onlineconversion.com/unix_time.htm
+        time.sleep(0.1)
+
+    python insert_test.py 파일 실핼
+    chmod 777 insert_test.py //파일권한 변경
+    -rwxrwxrwx. 1 root root   299 Oct 29 19:03 insert_test.py //ll로 확인
+    
+
+
+    
+    
+    
+    
+    
+    http://125.7.128.52/doku/doku.php?id=tsdb:opentsdb
