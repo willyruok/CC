@@ -19,6 +19,21 @@
     python insert_test.py 
     
     
+    연습 1
+    메트릭 이름 변경
+    insert_test.py 수정
+    ihtc.test01로 변경
+    웹브라우저에서 확인
+    브라우저에서 확인하기까지 시간이 좀 걸림
+
+
+    연습 2
+    Tag 추가하기
+    insert_test.py 수정
+    print "inha.test %d %d id = %d" % ( time.time(), tsec, 1030 )
+
+
+    
     
 
 
