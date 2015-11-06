@@ -12,6 +12,15 @@
     ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=/usr/local/data --auto-metric
     웹브라우저에서 다시 확인
     http://127.0.0.1:4242
+    
+    ./startstop 
+    usage: ./startstop <start [args]|stop|restart|status|force-restart>
+    ./startstop force-restart
+    python insert_test.py 
+    
+    
+    
+
 
 
 
