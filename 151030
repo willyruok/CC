@@ -70,6 +70,5 @@ Please comment cancel the portion of the '#TSD_HOST=dns.name.of.tsd' and Enter t
     -rwxrwxrwx. 1 root root   299 Oct 29 19:03 insert_test.py //ll로 확인
     
      ./startstop force restart
-    ps -ax
 
     
