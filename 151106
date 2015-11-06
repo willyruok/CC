@@ -1,0 +1,18 @@
+강제종료
+    ps -ax | grep opentsdb
+    PID 10417... 아이디를 찾아
+    kill -9 ...
+    hbase도 마찬가지 방법으로 강제종료
+
+강제종료를 했으니 다시 실행
+    local/data/hbase-1.1.2/bin
+    ls하면 목록이 보임
+    ./start-hbase.sh
+    opentsdb 폴더로 이동
+    ./build/tsdb tsd --port=4242 --staticroot=build/staticroot --cachedir=/usr/local/data --auto-metric
+    웹브라우저에서 다시 확인
+    http://127.0.0.1:4242
+
+
+
+  
