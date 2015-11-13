@@ -1,0 +1,84 @@
+위치
+usr/local/workspace
+
+
+exercise 1
+•주기적으로 증가하는 데이터를 openTSDB에 저장
+//괄호 안에 변수를 넣고 변수의 값을 1씩 증가
+
+import sys
+import urllib2
+import time
+from datetime import datetime, timedelta
+import json
+import requests
+
+url ="http://127.0.0.1:4242/api/put"
+count1 = 0
+//count는 변수값으로 안됨..
+
+def insert(value):
+        data={
+                "metric":"foo.bar",
+                "timestamp":time.time(),
+                "value":value,
+                "tags":{
+                        "host":"mypc"
+                }
+        }
+        ret = requests.post(url, data=json.dumps(data))
+        print ret
+        time.sleep(1)
+
+while 1 :
+        t = time.localtime()
+        tsec = t.tm_sec
+
+        if tsec%10!=0 :
+                print tsec
+                time.sleep(1)
+        else :
+                count1 = count1+10
+                insert(count1)
+                print count1
+                //count1의 값을 확인하기 위해 프린트
+                
+
+
+
+exercise 2
+•주기적으로 특정 웹페이지(http://www.airkorea.or.kr) 크롤링하여 openTSDB에 저장 (미세먼지)
+
+참고
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*- 
+
+import urllib2 # extensible library for opening URLs
+import time
+
+# 인천 미세먼지 
+url = 'http://www.airkorea.or.kr/index'
+
+
+def getData(buffers):
+    a = buffers.split('<tbody id="mt_mmc2_10007">')[1]
+    #print a
+
+    b = a.split('</tbody>')[0].replace('<tr>','').replace('</tr>','').replace('</td>','')
+    #print b
+
+    c = b.split('<td>')
+    #print c[1]
+    #print c[2]
+
+if __name__ == '__main__':
+
+    page = urllib2.urlopen(url).read()
+    print page
+
+    getData(page)
+
+
+
+
