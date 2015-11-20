@@ -1,0 +1,162 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*- 
+
+import sys
+import urllib2
+import time
+from datetime import datetime, timedelta
+import json
+import requests
+
+
+# 인천 미세먼지 
+url = 'http://www.airkorea.or.kr/index'
+url_local ="http://127.0.0.1:4242/api/put"
+
+def insert(metric_name, tag_site, value):
+    data={
+        "metric":metric_name,
+        "timestamp":time.time(),
+        "value":value,
+        "tags":{
+            "site":tag_site
+        }
+    }
+    ret = requests.post(url_local, data=json.dumps(data))
+    time.sleep(1)
+
+
+def getData(buffers):
+    a = buffers.split('<tbody id="mt_mmc2_10007">')[1]
+    #print a
+
+    b = a.split('</tbody>')[0].replace('<tr>','').replace('</tr>','').replace('</td>','')
+    #print b
+
+    c = b.split('<td>')
+    # seoul
+    print c[1]
+    print c[2]
+
+    # incheon
+    print c[7]
+    print c[8]
+
+    insert('dust', 'incheon', int(c[8]))
+    time.sleep(1)
+
+if __name__ == '__main__':
+    while 1 :
+        t = time.localtime()
+        tsec = t.tm_sec
+
+        if tsec%10!=0:
+            print tsec
+            time.sleep(1)
+        else :
+            page = urllib2.urlopen(url).read()
+            getData(page)
+
+에러발생..
+Traceback (most recent call last):
+  File "exercise2.py", line 58, in <module>
+    getData(page)
+  File "exercise2.py", line 30, in getData
+    a = buffers.split('<tbody id="mt_mmc2_10007">')[1]
+IndexError: list index out of range
+
+http://www.airkorea.or.kr/index 사이트가 접속 불가..
+
+
+
+
+  File "temp1120.py", line 8, in <module>
+    from lxml.html import parse, fromstring
+
+모듈이 없다고 나옴. 설치
+
+yum install python-lxml
+
+vim temp1120.py
+
+import sys
+import urllib2
+import time
+from datetime import datetime, timedelta
+import json
+import requests
+import time
+
+from lxml.html import parse, fromstring # processing XML and HTML
+
+# 인천 남구 용현동 기상상황 확인 url
+url = 'http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=2823759100'
+url_local = 'http://192.168.85.128:4242/'
+temp=[]
+
+def insert(metric_name, tag_site, value):
+    data={
+        "metric":metric_name,
+        "timestamp":time.time(),
+        "value":value,
+        "tags":{
+            "site":tag_site
+        }
+    }
+    ret = requests.post(url_local, data=json.dumps(data))
+    time.sleep(1)
+
+def temp_process(xml):
+    for  elt in xml.getiterator("temp"):    # getting temp tag 
+        temp_val = elt.text
+    print temp_val
+    insert('temparature','Incheon', temp_val)
+
+if __name__ == '__main__':
+    page = urllib2.urlopen(url).read()
+    print page
+
+    xml_raw = fromstring(page)
+
+    temp_process(xml_raw)
+
+//데이터가 하나만 들어감.
+//while문을 사용해야 함.
+//1초마다 10.2만 출력됨......
+//TSD에서 확인 안됨..
+
+url = 'http://www.kma.go.kr/wid/queryDFSRSS.jsp?zone=2823759100'
+url_local ="http://127.0.0.1:4242/api/put"
+temp=[]
+
+def insert(metric_name, tag_site, value):
+    data={
+        "metric":metric_name,
+        "timestamp":time.time(),
+        "value":value,
+        "tags":{
+            "site":tag_site
+        }
+    }
+    ret = requests.post(url_local, data=json.dumps(data))
+    time.sleep(1)
+    print ret
+
+def temp_process(xml):
+    for  elt in xml.getiterator("temp"):
+        temp_val = elt.text
+    print temp_val
+    insert('temparature','Incheon', temp_val)
+    insert('temparature','Seoul', '20')
+    //서울의 값은 임의로 20 값을 넣음
+
+if __name__ == '__main__':
+    page = urllib2.urlopen(url).read()
+    #print page   
+
+    xml_raw = fromstring(page)
+    temp_process(xml_raw)
+    
+    //tsd에서 값 확인
+
+
