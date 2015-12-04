@@ -1,0 +1,114 @@
+윈도우에서 USB 드라이버 설치
+http://125.7.128.52:8001/wordpress/pub/inhatc/CDM_Setup.exe
+
+usb 아이콘이 흐릿하게 보일 경우
+오른쪽 버튼 누르고 커넥트
+
+dmesg | grep ttyUSB 확인
+usb 2-2.1: FTDI USB Serial Device converter now attached to ttyUSB0
+
+# pyserial install
+wget http://sourceforge.net/projects/pyserial/files/pyserial/2.7/pyserial-2.7.tar.gz
+tar xvfz pyserial-2.7.tar.gz
+cd pyserial-2.7
+python setup.py install
+
+vim serial_to_openTSDB.py
+
+#!/usr/bin/python
+
+import time
+import os
+import sys
+import serial
+
+packet =''
+
+def bigEndian(s):
+        res = 0
+        while len(s):
+                s2 = s[0:2]
+                s = s[2:]
+                res <<=8
+                res += eval('0x' + s2)
+        return res
+
+def sese(s):
+
+        head = s[:20]
+        type = s[36:40]
+
+        serialID = s[24:36]
+        nodeID = s[55:56]
+        seq = s[40:44]
+
+        batt = s[60:64]
+
+
+        if type == "0070" : # TH
+                #print s
+                print "battery : " , bigEndian(batt)
+                temperature = bigEndian( s[64:68] )
+                v1 = -39.6 + 0.01 * temperature
+
+                t = int(time.time())
+                print "temperature %d %.2f nodeid=%d" % ( t, v1, bigEndian( nodeID ) )
+
+        else:
+                #print >> sys.stderr, "Invalid type : " + type
+                pass
+
+if __name__ == '__main__':
+
+        tmpPkt = []
+        flag = 0
+
+        test = serial.Serial("/dev/ttyUSB0", 115200)
+
+        while 1:
+                Data_in = test.read().encode('hex')
+
+                if(Data_in == '7e'):
+                        if(flag == 2) :
+                                flag =0
+                                tmpPkt.append(Data_in)
+                                packet = ''.join(tmpPkt)
+
+                                # send packet
+                                sese(packet)
+
+                                tmpPkt = []
+                                sys.stdout.flush()
+                        else :
+                                flag = flag + 1
+                                tmpPkt.append(Data_in)
+                else :
+                        if(flag == 1 and Data_in =='45') :
+                                flag =2
+                        tmpPkt.append(Data_in)
+
+
+이 코드를 수정해 openTSDB에 넣기
+
+import json
+import requests
+
+url_local ="http://127.0.0.1:4242/api/put"
+
+def insert(metric_name, tag_site, value):
+    data={
+        "metric":metric_name,
+        "timestamp":time.time(),
+        "value":value,
+        "tags":{
+            "id":tag_site
+        }
+    }
+    ret = requests.post(url_local, data=json.dumps(data))
+    time.sleep(1)
+
+insert('temperature',nodeID,v1)
+
+
+추가
+nodeID로 구분할 것이므로 ''를 넣지 않음
