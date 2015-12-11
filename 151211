@@ -1,0 +1,101 @@
+  web2py 설치
+
+  wget http://www.web2py.com/examples/static/web2py_src.zip
+
+   unzip web2py_src.zip
+   cd web2py
+
+   # web2py is that you do not install it. You can run it right from this folder by typing
+   python web2py.py
+   
+ 웹브라우저에서 확인
+  http://127.0.0.1:8000
+  
+  터미널을 띄워놓은채 새로 터미널을 열어
+  /usr/local/web2py/applications  이동
+ 웹에서도 생성 가능함 app7 생성
+ 
+  cd app7/models
+  vim test.py 생성
+  aaa = 111 넣어서 저장
+  /usr/local/web2py/applications/app7/controllers 로 이동
+  vim test.py
+  def qqq():
+    return aaa
+  http://127.0.0.1:8000/app7/test/qqq
+  웹페이지에서 확인
+  111이 화면에 보임
+
+
+  vim /usr/local/web2py/applications/app1/controllers/default.py
+  def index():
+        bbb = aaa +1
+        return locals() //뷰로 넘어감
+  안에 내용들 다 지우고 입력
+  
+  vim /usr/local/web2py/applications/app1/views/default/index.html
+  {{=bbb}}
+  
+  http://127.0.0.1:8000/app7
+  웹화면에서 확인 112가 보임
+
+
+https://github.com/kowonsik/CCL/blob/master/web2py/api.md
+
+/usr/local/web2py/applications/max/controllers/test.py
+내용 수정
+
+# -*- coding: utf-8 -*-
+
+import datetime
+import urllib2
+import json
+import time
+
+#url = "http://127.0.0.1:4242/api/query?start=1m-ago&m=sum:temperature%7Bid=1%7D&o=&yrange=%5B0:%5D&key=out%20bottom%20center%20box&wxh=740x345&autoreload=15"
+
+url="http://125.7.128.53:4242/api/query?start=1m-ago&m=sum:gyu_RC1_thl.temperature&o=&yrange=[0:]&wxh=883x436&autoreload=15"
+//125.7.128.53:4242에서 gyu_RC1_thl.temperature
+//http://125.7.128.53:4242/#start=1m-ago&m=sum:gyu_RC1_thl.temperature&o=&yrange=[0:]&wxh=883x436&autoreload=15 주소를 복사
+//api/qurey? 넣어서 복사
+
+
+def make_data(raw_data):
+        max_val = 0
+
+        tmp_data = raw_data.replace('u' , '')
+        tmp_data = raw_data.replace('{' , '')
+        tmp_data = raw_data.replace("'" , '')
+        tmp_data = raw_data.replace('}' , '')
+        tmp_data = raw_data.split(',')
+
+        for i in range(0, len(tmp_data)-1) :
+                arr_data = tmp_data[i].split(':')
+                arr_Time = arr_data[0].strip()
+                arr_Value = arr_data[1].strip()
+
+                if float(arr_Value) > float(max_val):
+                        max_val = arr_Value
+        return max_val
+
+def test():
+        max_value = 0
+        max_time = 0
+        param = request.vars['id']
+
+        url_lib=urllib2.urlopen(url)
+        url_data=url_lib.read()
+
+        Data=json.loads(url_data)
+
+        raw_data=str(Data[0]["dps"])
+        result_max_val = make_data(raw_data)
+
+        return result_max_val
+
+웹에서 확인
+http://127.0.0.1:8000/max/test/test
+
+
+
+
